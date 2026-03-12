@@ -73,10 +73,10 @@ async function submitForm(event) {
     event.preventDefault();
     clearError();
     resultPanel.hidden = true;
-    setBusy(true, '変換中です...');
 
     try {
         const formData = new FormData(form);
+        setBusy(true, '変換中です...');
         const response = await fetch('/api/convert', {
             method: 'POST',
             body: formData

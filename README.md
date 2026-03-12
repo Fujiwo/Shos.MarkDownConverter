@@ -32,6 +32,13 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 
 起動後に表示される URL をブラウザーで開いて利用します。
 
+## 詳細ドキュメント
+
+- セットアップ: [Document/SetupGuide.md](Document/SetupGuide.md)
+- ユーザーマニュアル: [Document/UserManual.md](Document/UserManual.md)
+- トラブルシューティング: [Document/Troubleshooting.md](Document/Troubleshooting.md)
+- テストガイド: [Document/TestGuide.md](Document/TestGuide.md)
+
 ## 設定
 
 MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) と [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) の `MarkItDown` セクションで変更できます。
@@ -67,7 +74,7 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 dotnet test Shos.MarkDownConverter.slnx
 ```
 
-単体テストでは入力検証、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形を検証します。結合テストではアップロード API の正常系、変換失敗、Python 不在相当の応答を検証します。
+単体テストでは入力検証、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形を検証します。結合テストではアップロード API の正常系、変換失敗、Python 不在相当の応答を検証します。UI を含む E2E テストを実行する場合は、Playwright ブラウザーの導入が必要です。詳細は [Document/TestGuide.md](Document/TestGuide.md) を参照してください。
 
 ## トラブルシューティング
 

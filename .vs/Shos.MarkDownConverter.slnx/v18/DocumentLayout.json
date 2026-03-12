@@ -1,12 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|c:\\dropbox\\dropbox\\source\\github\\repos\\shos.markdownconverter\\src\\shos.markdownconverter.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|solutionrelative:src\\shos.markdownconverter.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 24,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -102,28 +97,11 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
             },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\Program.cs",
-              "RelativeDocumentMoniker": "src\\Shos.MarkDownConverter.Web\\Program.cs",
-              "ToolTip": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\Program.cs",
-              "RelativeToolTip": "src\\Shos.MarkDownConverter.Web\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC0AAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T07:46:59.779Z",
-              "EditorCaption": ""
             }
           ]
         }
