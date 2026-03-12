@@ -18,7 +18,7 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services
 	.AddOptions<MarkItDownOptions>()
 	.Bind(converterOptionsSection)
-	.PostConfigure(options => options.Normalize());
+	.PostConfigure(options => options.Normalize(builder.Environment.ContentRootPath));
 
 builder.Services.AddSingleton<UploadValidationService>();
 builder.Services.AddSingleton<MarkItDownErrorFormatter>();

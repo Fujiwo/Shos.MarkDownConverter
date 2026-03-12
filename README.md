@@ -6,20 +6,22 @@ Shos.MarkDownConverter は、ブラウザーから単一ファイルをアップ
 
 - .NET SDK 10.0 以上
 - Python 3.10 以上
+- Python 仮想環境 `.venv`
 - Python パッケージ MarkItDown
 
 ## セットアップ
 
 1. .NET 10 SDK をインストールします。
 2. Python 3.10 以上をインストールします。
-3. 任意の仮想環境を有効化します。
-4. MarkItDown をインストールします。
+3. リポジトリ直下に仮想環境を作成します。
+4. 仮想環境の Python に MarkItDown をインストールします。
 
 ```powershell
-python -m pip install "markitdown[all]"
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install "markitdown[all]"
 ```
 
-MarkItDown の一部形式は追加依存関係に依存します。`[all]` を利用すると、README に記載した既定の対応拡張子を扱いやすくなります。
+開発環境では [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) から `.venv\Scripts\python.exe` を使う設定です。MarkItDown の一部形式は追加依存関係に依存します。`[all]` を利用すると、README に記載した既定の対応拡張子を扱いやすくなります。
 
 ## 実行手順
 
@@ -39,7 +41,7 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 - `MaxUploadSizeBytes`: アップロード上限
 - `AllowedExtensions`: 受け付ける拡張子一覧
 
-環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。値のハードコードは避けてください。
+`PythonExecutablePath` は相対パスでも指定でき、Web プロジェクトのルートを基準に絶対パスへ解決されます。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
 
 ## ユーザーマニュアル
 
@@ -51,14 +53,13 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 
 ## 対応ファイル形式の考え方
 
-アプリケーションは MarkItDown の CLI をそのまま利用し、変換ルールを C# 側で再実装しません。既定の拡張子一覧には、MarkItDown README で明示されている代表的な形式を含めています。
+アプリケーションは MarkItDown の CLI をそのまま利用し、変換ルールを C# 側で再実装しません。既定の拡張子一覧は、日常的に扱うことが多い文書、表計算、テキスト、基本画像形式に絞っています。
 
-- 文書: `.pdf`, `.docx`, `.pptx`, `.xlsx`, `.xls`, `.epub`
+- 文書: `.pdf`, `.docx`, `.pptx`, `.xlsx`
 - テキスト系: `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`
-- メディア: `.jpg`, `.jpeg`, `.png`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.webp`, `.wav`, `.mp3`
-- その他: `.zip`, `.msg`, `.eml`
+- 画像: `.jpg`, `.jpeg`, `.png`
 
-実際に変換できるかどうかは、インストールした MarkItDown のバージョンと追加依存関係に依存します。
+より広い形式を扱いたい場合は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) の `AllowedExtensions` に追加してください。実際に変換できるかどうかは、インストールした MarkItDown のバージョンと追加依存関係に依存します。
 
 ## テスト
 
@@ -73,12 +74,12 @@ dotnet test Shos.MarkDownConverter.slnx
 ### Python が見つからない
 
 - `MarkItDown:PythonExecutablePath` が正しいか確認してください。
-- `python --version` が通るか確認してください。
+- `.\.venv\Scripts\python.exe --version` が通るか確認してください。
 
 ### MarkItDown が見つからない
 
-- `python -m pip show markitdown` でインストール状態を確認してください。
-- 仮想環境を使っている場合は、アプリがその Python を参照しているか確認してください。
+- `.\.venv\Scripts\python.exe -m pip show markitdown` でインストール状態を確認してください。
+- アプリが `.venv\Scripts\python.exe` を参照しているか確認してください。
 
 ### 一部形式だけ失敗する
 
