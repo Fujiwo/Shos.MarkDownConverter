@@ -159,14 +159,15 @@ UI は簡素でよいですが、以下は満たしてください。
 ## 12. Agent Skills と Copilot 設定方針
 Microsoft Agent Skills の .NET Skills は導入候補として検討すること。
 
-- Microsoft Agent Sills の .NET Skills は、https://github.com/dotnet/skills のものを組み込むこと
-- その他 Python や Web 開発など、必要な Agent Skills を適宜組み込むこと
+- Microsoft Agent Skills の .NET Skills を検討する場合は、https://github.com/dotnet/skills のものを候補とすること
+- その他 Python や Web 開発などの Agent Skills も、必要性が明確な場合のみ検討すること
 
 ただし、以下の条件を守ってください:
 
 1. 導入自体を目的にしないこと
 2. Web アプリ本体に明確な価値がある場合のみ採用すること
-3. 導入する場合は、採用理由と利用箇所を説明できるようにすること
+3. 不要であれば導入しないこと
+4. 導入する場合は、採用理由と利用箇所を説明できるようにすること
 
 copilot-instructions.md を作成または更新する場合は、以下を含めてください。
 
