@@ -1,4 +1,12 @@
 <Solution>
+  <Folder Name="/Documents/">
+    <File Path="Documents/SetupGuide.md" />
+    <File Path="Documents/TestGuide.md" />
+    <File Path="Documents/Troubleshooting.md" />
+    <File Path="Documents/UserManual.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj" />
   </Folder>
