@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Shos.MarkDownConverter.Web.IntegrationTests/Shos.MarkDownConverter.Web.IntegrationTests.csproj" />
+    <Project Path="tests/Shos.MarkDownConverter.Web.Tests/Shos.MarkDownConverter.Web.Tests.csproj" />
+  </Folder>
+</Solution>
