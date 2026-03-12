@@ -34,14 +34,14 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 
 ## 設定
 
-MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) の `MarkItDown` セクションで変更できます。
+MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) と [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) の `MarkItDown` セクションで変更できます。
 
-- `PythonExecutablePath`: Python 実行ファイルのパス
+- `PythonExecutablePath`: Python 実行ファイルのパス。開発環境では `.venv\Scripts\python.exe` を使う想定です。
 - `ModuleName`: 既定では `markitdown`
 - `MaxUploadSizeBytes`: アップロード上限
 - `AllowedExtensions`: 受け付ける拡張子一覧
 
-`PythonExecutablePath` は相対パスでも指定でき、Web プロジェクトのルートを基準に絶対パスへ解決されます。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
+`PythonExecutablePath` は相対パスでも指定でき、Web プロジェクトのルートを基準に絶対パスへ解決されます。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
 
 ## ユーザーマニュアル
 
