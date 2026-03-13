@@ -45,10 +45,10 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 
 - `PythonExecutablePath`: Python 実行ファイルのパス。`python` のようなコマンド名、または相対パスと絶対パスを指定できます。開発環境では `.venv\Scripts\python.exe` を使う想定です。
 - `ModuleName`: 既定では `markitdown`
-- `MaxUploadSizeBytes`: アップロード上限
+- `MaxUploadSizeBytes`: アップロード上限。既定値の正本は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) です。
 - `AllowedExtensions`: 受け付ける拡張子一覧
 
-`PythonExecutablePath` に `python` のようなコマンド名を指定した場合は、そのまま PATH 解決に委ねます。`.\tools\python.exe` や `..\..\.venv\Scripts\python.exe` のような相対パスを指定した場合だけ、Web プロジェクトのルートを基準に絶対パスへ解決します。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
+`PythonExecutablePath` に `python` のようなコマンド名を指定した場合は、そのまま PATH 解決に委ねます。`\.\tools\python.exe` や `..\..\.venv\Scripts\python.exe` のような相対パスを指定した場合だけ、Web プロジェクトのルートを基準に絶対パスへ解決します。`MaxUploadSizeBytes` の既定値は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) から読み取ります。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
 
 ## ユーザーマニュアル
 

@@ -32,7 +32,7 @@
 
 ## ファイルサイズが上限を超えている
 
-- 画面のサイズ上限表示と `MaxUploadSizeBytes` を確認してください。
+- 画面のサイズ上限表示と、[src/Shos.MarkDownConverter.Web/appsettings.json](../src/Shos.MarkDownConverter.Web/appsettings.json) の `MaxUploadSizeBytes` を確認してください。
 - サイズ超過時はファイルサイズ基準の上限超過メッセージが表示されます。
 - 必要ならファイルを小さくするか、上限を見直してください。
 

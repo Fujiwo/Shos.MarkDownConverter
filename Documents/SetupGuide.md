@@ -26,6 +26,8 @@ dotnet restore Shos.MarkDownConverter.slnx
 
 開発環境では、`MarkItDown:PythonExecutablePath` に `.venv\Scripts\python.exe` の相対パスを設定しています。
 
+`MarkItDown:MaxUploadSizeBytes` の既定値も、共通設定ファイルの [src/Shos.MarkDownConverter.Web/appsettings.json](../src/Shos.MarkDownConverter.Web/appsettings.json) を正本として読み取ります。
+
 `PythonExecutablePath` を変更した場合は、実際にそのパスで Python を起動できるか確認してください。コマンド名を設定している場合は PATH から解決される必要があり、相対パスを設定している場合は Web プロジェクトのルート基準で解決されます。
 
 ## 起動確認
