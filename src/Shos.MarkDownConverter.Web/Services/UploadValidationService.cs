@@ -50,18 +50,10 @@ public sealed class UploadValidationService
 
         if (file.Length > _options.MaxUploadSizeBytes)
         {
-            return FileValidationResult.Invalid(new ConversionError(
-                StatusCodes.Status400BadRequest,
-                "file-too-large",
-                $"ファイルサイズが上限を超えています。現在の上限は {FormatFileSize(_options.MaxUploadSizeBytes)} です。",
-                [
-                    "選択したファイルがこのアプリのアップロード上限を超えています。"
-                ],
-                [
-                    "ファイルを小さくして再試行してください。",
-                    $"管理者は設定で上限値 {FormatFileSize(_options.MaxUploadSizeBytes)} を見直してください。"
-                ],
-                null));
+            return FileValidationResult.Invalid(ConversionErrorFactory.CreateFileTooLarge(_options.MaxUploadSizeBytes) with
+            {
+                StatusCode = StatusCodes.Status400BadRequest
+            });
         }
 
         var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
@@ -83,23 +75,6 @@ public sealed class UploadValidationService
         }
 
         return FileValidationResult.Valid(extension);
-    }
-
-    private static string FormatFileSize(long bytes)
-    {
-        if (bytes < 1024)
-        {
-            return $"{bytes} B";
-        }
-
-        var kiloBytes = bytes / 1024d;
-        if (kiloBytes < 1024)
-        {
-            return $"{kiloBytes:0.#} KB";
-        }
-
-        var megaBytes = kiloBytes / 1024d;
-        return $"{megaBytes:0.#} MB";
     }
 }
 

@@ -8,6 +8,14 @@ dotnet test Shos.MarkDownConverter.slnx
 
 単体テストでは入力検証、設定正規化、エラー整形、変換サービス、キャンセル時の外部プロセス回収を確認します。結合テストでは正常系、Python 起動失敗、サイズ超過、未処理例外を含む JSON 契約を確認します。
 
+主な確認対象は次の通りです。
+
+- 設定正規化と設定既定値解決: [tests/Shos.MarkDownConverter.Web.Tests/MarkItDownOptionsTests.cs](../tests/Shos.MarkDownConverter.Web.Tests/MarkItDownOptionsTests.cs)
+- 変換オーケストレーション: [tests/Shos.MarkDownConverter.Web.Tests/MarkItDownConversionServiceTests.cs](../tests/Shos.MarkDownConverter.Web.Tests/MarkItDownConversionServiceTests.cs)
+- 入力検証: [tests/Shos.MarkDownConverter.Web.Tests/UploadValidationServiceTests.cs](../tests/Shos.MarkDownConverter.Web.Tests/UploadValidationServiceTests.cs)
+- API 契約: [tests/Shos.MarkDownConverter.Web.IntegrationTests/ConvertEndpointTests.cs](../tests/Shos.MarkDownConverter.Web.IntegrationTests/ConvertEndpointTests.cs)
+- UI 操作: [tests/Shos.MarkDownConverter.Web.E2ETests/UiWorkflowTests.cs](../tests/Shos.MarkDownConverter.Web.E2ETests/UiWorkflowTests.cs)
+
 ## UI を含む E2E テスト
 
 UI テストは Playwright for .NET を使います。初回のみブラウザーの導入が必要です。
@@ -31,3 +39,4 @@ E2E テストでは次を確認します。
 - E2E テストはローカルで Web アプリを実プロセスとして起動します。
 - 並列実行でアプリのビルド出力が競合しないよう、E2E テストは逐次実行します。
 - 実行後に `Shos.MarkDownConverter.Web.dll` がロックされる場合は、残留した `dotnet` プロセスがないか確認してください。
+- フロントエンドは ES Modules を使っているため、UI 関連の変更確認では古いブラウザーキャッシュが残っていないかも確認してください。

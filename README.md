@@ -39,6 +39,13 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 - トラブルシューティング: [Documents/Troubleshooting.md](Documents/Troubleshooting.md)
 - テストガイド: [Documents/TestGuide.md](Documents/TestGuide.md)
 
+## 構成の見取り図
+
+- アプリ起動の配線は [src/Shos.MarkDownConverter.Web/Program.cs](src/Shos.MarkDownConverter.Web/Program.cs) から [src/Shos.MarkDownConverter.Web/Extensions](src/Shos.MarkDownConverter.Web/Extensions) 配下へ切り出しています。
+- 設定モデルと設定補完は [src/Shos.MarkDownConverter.Web/Options](src/Shos.MarkDownConverter.Web/Options) 配下にまとめています。
+- 変換処理、エラー生成、サイズ表記などの業務ロジックは [src/Shos.MarkDownConverter.Web/Services](src/Shos.MarkDownConverter.Web/Services) 配下にまとめています。
+- フロントエンドは [src/Shos.MarkDownConverter.Web/wwwroot/app.js](src/Shos.MarkDownConverter.Web/wwwroot/app.js) を入口にし、API 通信、DOM 参照、表示更新を別モジュールへ分けています。
+
 ## 設定
 
 MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) と [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) の `MarkItDown` セクションで変更できます。
@@ -83,6 +90,8 @@ dotnet test Shos.MarkDownConverter.slnx
 ```
 
 単体テストでは入力検証、設定正規化、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形、キャンセル時の外部プロセス回収を検証します。結合テストではアップロード API の正常系、変換失敗、Python 起動失敗、サイズ超過、未処理例外時の応答を検証します。UI を含む E2E テストではコピー、ダウンロード、非対応拡張子、サイズ超過、Python 起動失敗の表示を確認します。詳細は [Documents/TestGuide.md](Documents/TestGuide.md) を参照してください。
+
+実装を追うときは、API 配線は [src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterWebApplicationExtensions.cs](src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterWebApplicationExtensions.cs)、設定登録は [src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterServiceCollectionExtensions.cs](src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterServiceCollectionExtensions.cs)、変換本体は [src/Shos.MarkDownConverter.Web/Services/MarkItDownConversionService.cs](src/Shos.MarkDownConverter.Web/Services/MarkItDownConversionService.cs) から読むと追いやすくなっています。
 
 ## トラブルシューティング
 

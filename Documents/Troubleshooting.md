@@ -45,3 +45,9 @@
 ## UI テストが動かない
 
 Playwright ブラウザーが未導入の可能性があります。手順は [Documents/TestGuide.md](TestGuide.md) を参照してください。
+
+## UI 変更が反映されない
+
+- ブラウザーを再読み込みして、古い JavaScript キャッシュが残っていないか確認してください。
+- [src/Shos.MarkDownConverter.Web/wwwroot/app.js](../src/Shos.MarkDownConverter.Web/wwwroot/app.js) から読み込むモジュール群に構文エラーがないか確認してください。
+- 開発中はブラウザーの開発者ツールで Console と Network を確認してください。

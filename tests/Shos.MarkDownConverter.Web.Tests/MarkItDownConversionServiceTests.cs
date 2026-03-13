@@ -9,47 +9,6 @@ namespace Shos.MarkDownConverter.Web.Tests;
 public sealed class MarkItDownConversionServiceTests
 {
     [Fact]
-    public void Normalize_LeavesBarePythonCommandUntouched()
-    {
-        var options = new MarkItDownOptions
-        {
-            PythonExecutablePath = "python"
-        };
-
-        options.Normalize(Path.Combine("C:\\repo", "src", "Shos.MarkDownConverter.Web"));
-
-        Assert.Equal("python", options.PythonExecutablePath);
-    }
-
-    [Fact]
-    public void Normalize_ResolvesRelativePythonPathAgainstContentRoot()
-    {
-        var contentRoot = Path.Combine("C:\\repo", "src", "Shos.MarkDownConverter.Web");
-        var options = new MarkItDownOptions
-        {
-            PythonExecutablePath = Path.Combine("..", "..", ".venv", "Scripts", "python.exe")
-        };
-
-        options.Normalize(contentRoot);
-
-        Assert.Equal(Path.GetFullPath(Path.Combine(contentRoot, "..", "..", ".venv", "Scripts", "python.exe")), options.PythonExecutablePath);
-    }
-
-    [Fact]
-    public void Normalize_KeepsAbsolutePythonPathUntouched()
-    {
-        var absolutePath = Path.GetFullPath(Path.Combine("C:\\tools", "python.exe"));
-        var options = new MarkItDownOptions
-        {
-            PythonExecutablePath = absolutePath
-        };
-
-        options.Normalize(Path.Combine("C:\\repo", "src", "Shos.MarkDownConverter.Web"));
-
-        Assert.Equal(absolutePath, options.PythonExecutablePath);
-    }
-
-    [Fact]
     public async Task ConvertAsync_ReturnsMarkdown_WhenProcessSucceeds()
     {
         var tempRoot = Path.Combine(Path.GetTempPath(), $"markdownconverter-tests-{Guid.NewGuid():N}");

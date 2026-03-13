@@ -30,6 +30,12 @@ dotnet restore Shos.MarkDownConverter.slnx
 
 `PythonExecutablePath` を変更した場合は、実際にそのパスで Python を起動できるか確認してください。コマンド名を設定している場合は PATH から解決される必要があり、相対パスを設定している場合は Web プロジェクトのルート基準で解決されます。
 
+## 起動まわりの構成
+
+- 起動エントリーポイントは [src/Shos.MarkDownConverter.Web/Program.cs](../src/Shos.MarkDownConverter.Web/Program.cs) です。
+- サービス登録と設定補完は [src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterServiceCollectionExtensions.cs](../src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterServiceCollectionExtensions.cs) で行います。
+- API ルーティングと例外処理は [src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterWebApplicationExtensions.cs](../src/Shos.MarkDownConverter.Web/Extensions/MarkDownConverterWebApplicationExtensions.cs) にまとめています。
+
 ## 起動確認
 
 ```powershell
