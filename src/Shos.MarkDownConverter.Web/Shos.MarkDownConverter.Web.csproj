@@ -5,6 +5,37 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseAppHost>false</UseAppHost>
+    <PreparePythonRuntimeOnPublish Condition="'$(PreparePythonRuntimeOnPublish)' == ''">true</PreparePythonRuntimeOnPublish>
+    <PythonRuntimeStamp>$([System.DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))</PythonRuntimeStamp>
+    <PythonRuntimeRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(BaseIntermediateOutputPath)python-runtime\'))</PythonRuntimeRoot>
+    <PythonRuntimeDir>$(PythonRuntimeRoot)$(PythonRuntimeStamp)</PythonRuntimeDir>
+    <PythonPublishRequirementsFile>$(MSBuildProjectDirectory)\..\..\requirements.publish.txt</PythonPublishRequirementsFile>
+    <PythonRuntimePreparationScript>$(MSBuildProjectDirectory)\..\..\scripts\Prepare-PythonRuntime.ps1</PythonRuntimePreparationScript>
+    <PythonBuildCommand Condition="'$(PythonBuildCommand)' == ''">python</PythonBuildCommand>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="python-runtime\**;.python-runtime\**" />
+    <None Remove="python-runtime\**;.python-runtime\**" />
+  </ItemGroup>
+
+  <Target Name="PreparePythonRuntimeForPublish"
+          BeforeTargets="CopyFilesToPublishDirectory"
+          Condition="'$(PreparePythonRuntimeOnPublish)' == 'true' and '$(OS)' == 'Windows_NT'">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(PythonRuntimePreparationScript)&quot; -RuntimeDir &quot;$(PythonRuntimeDir)&quot; -RequirementsFile &quot;$(PythonPublishRequirementsFile)&quot; -PythonCommand &quot;$(PythonBuildCommand)&quot;" />
+
+    <ItemGroup>
+      <PythonRuntimePublishFiles Include="$(PythonRuntimeDir)\**\*" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyPythonRuntimeToPublishDirectory"
+          AfterTargets="CopyFilesToPublishDirectory"
+          Condition="'$(PreparePythonRuntimeOnPublish)' == 'true' and '$(OS)' == 'Windows_NT'">
+    <Copy
+      SourceFiles="@(PythonRuntimePublishFiles)"
+      DestinationFiles="@(PythonRuntimePublishFiles->'$(PublishDir).python-runtime\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

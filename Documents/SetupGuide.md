@@ -19,6 +19,16 @@ python -m venv .venv
 dotnet restore Shos.MarkDownConverter.slnx
 ```
 
+## Azure App Service 発行前提
+
+Windows の Azure App Service へ Visual Studio の「発行」で配置する場合は、publish 時に配布専用の `.python-runtime` を自動生成します。
+
+- Python 依存の正本は [requirements.publish.txt](../requirements.publish.txt) です
+- 発行前処理スクリプトは [scripts/Prepare-PythonRuntime.ps1](../scripts/Prepare-PythonRuntime.ps1) です
+- Web プロジェクトの publish では `.python-runtime` が発行物へ同梱されます
+
+発行元マシンでは、`python` コマンドで Python 3.10 以上を起動できるようにしてください。PATH 上の別名を使う場合は、Visual Studio の publish で MSBuild プロパティ `PythonBuildCommand` を上書きしてください。
+
 ## 設定ファイル
 
 - 共通設定: [src/Shos.MarkDownConverter.Web/appsettings.json](../src/Shos.MarkDownConverter.Web/appsettings.json)
@@ -52,3 +62,11 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 ```
 
 パッケージ情報が表示されれば導入済みです。
+
+## 発行確認
+
+```powershell
+dotnet publish src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj -c Release
+```
+
+publish 後は、出力ディレクトリ配下に `.python-runtime\Scripts\python.exe` が含まれていることを確認してください。

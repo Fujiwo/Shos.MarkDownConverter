@@ -1,0 +1,35 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "publish-check",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"publish",
+				"src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj",
+				"-c",
+				"Release",
+				"-o",
+				".\\artifacts\\publish-task-check"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "publish-check",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"publish",
+				"src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj",
+				"-c",
+				"Release",
+				"-o",
+				"artifacts/publish-task-check",
+				"-v:minimal"
+			],
+			"isBackground": false
+		}
+	]
+}

@@ -1,0 +1,211 @@
+:root {
+    --bg: linear-gradient(160deg, #f4efe6 0%, #eef5ef 55%, #dbe6f2 100%);
+    --panel: rgba(255, 255, 255, 0.82);
+    --panel-border: rgba(24, 36, 45, 0.12);
+    --text: #18242d;
+    --muted: #52616c;
+    --accent: #0d6b57;
+    --accent-strong: #0a5444;
+    --danger: #9f2f2f;
+    --shadow: 0 24px 70px rgba(24, 36, 45, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Yu Gothic UI", "Hiragino Sans", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+
+.shell {
+    width: min(1080px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 48px 0 64px;
+}
+
+.hero {
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 12px;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+}
+
+.lead {
+    max-width: 720px;
+    font-size: 1.05rem;
+    color: var(--muted);
+}
+
+.panel {
+    margin-top: 20px;
+    padding: 24px;
+    border: 1px solid var(--panel-border);
+    border-radius: 24px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+}
+
+.upload-form {
+    display: grid;
+    gap: 20px;
+}
+
+.dropzone {
+    display: grid;
+    gap: 10px;
+    padding: 32px;
+    border: 2px dashed rgba(13, 107, 87, 0.35);
+    border-radius: 20px;
+    background: rgba(13, 107, 87, 0.06);
+    cursor: pointer;
+    transition: transform 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+.dropzone.dragover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background: rgba(13, 107, 87, 0.12);
+}
+
+.dropzone input {
+    display: none;
+}
+
+.dropzone-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.dropzone-subtitle,
+.status,
+#supported-extensions,
+#max-size {
+    color: var(--muted);
+}
+
+.meta-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.actions,
+.result-header,
+.result-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.actions {
+    flex-wrap: wrap;
+}
+
+button {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font: inherit;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent);
+    cursor: pointer;
+    transition: background-color 150ms ease, transform 150ms ease;
+}
+
+button:hover {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+#copy-button,
+#download-button {
+    background: #1d4454;
+}
+
+#result-output {
+    width: 100%;
+    min-height: 420px;
+    margin-top: 16px;
+    border: 1px solid rgba(24, 36, 45, 0.14);
+    border-radius: 18px;
+    padding: 18px;
+    resize: vertical;
+    font: 0.95rem/1.6 Consolas, "Courier New", monospace;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+#error-panel {
+    border-color: rgba(159, 47, 47, 0.22);
+}
+
+#error-message {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.error-section + .error-section {
+    margin-top: 16px;
+}
+
+.error-section h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+@media (max-width: 720px) {
+    .shell {
+        width: min(100% - 20px, 1080px);
+        padding-top: 24px;
+    }
+
+    .panel {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .meta-row,
+    .result-header {
+        grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .result-actions {
+        flex-wrap: wrap;
+    }
+}

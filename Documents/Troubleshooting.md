@@ -10,6 +10,8 @@
 
 `PythonExecutablePath` にコマンド名を設定している場合は PATH 解決できる必要があります。相対パスを設定している場合は、Web プロジェクトのルート基準で正しいパスか確認してください。
 
+Azure App Service へ発行した環境では、`.python-runtime\Scripts\python.exe` が配置されているか、`MarkItDown__PythonExecutablePath` がその場所を指しているか確認してください。
+
 ## MarkItDown が見つからない
 
 ```powershell
@@ -23,6 +25,23 @@
 ```powershell
 .\.venv\Scripts\python.exe -m pip install "markitdown[all]"
 ```
+
+publish で同梱する配布専用ランタイムが壊れている場合は、発行元の Windows 環境で次を実行して再生成できるか確認してください。
+
+```powershell
+dotnet publish src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj -c Release
+```
+
+そのうえで、publish 出力に `.python-runtime\Scripts\python.exe` と `markitdown` の依存が含まれているか確認してください。
+
+## publish で Python ランタイム生成に失敗する
+
+- 発行元マシンで `python --version` が成功するか確認してください
+- [requirements.publish.txt](../requirements.publish.txt) が存在するか確認してください
+- [scripts/Prepare-PythonRuntime.ps1](../scripts/Prepare-PythonRuntime.ps1) が実行可能か確認してください
+- 別の Python 実行ファイルを使う場合は、publish 時に `PythonBuildCommand` MSBuild プロパティを指定してください
+
+`error NETSDK1152` で publish が止まる場合は、過去の試行で生成された [src/Shos.MarkDownConverter.Web](../src/Shos.MarkDownConverter.Web) 配下の `python-runtime` が既定の publish 項目に混ざっている可能性があります。最新の構成では `obj/.../python-runtime` を使うので、古い `python-runtime` ディレクトリを削除して再試行してください。
 
 ## 対応形式なのに変換できない
 

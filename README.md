@@ -32,6 +32,19 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 
 起動後に表示される URL をブラウザーで開いて利用します。
 
+## Azure App Service への発行
+
+Windows の Azure App Service へ Visual Studio の「発行」からデプロイする想定で、publish 時に配布専用の `.python-runtime` を自動生成して発行物へ同梱する設定を入れています。
+
+- Python 依存は [requirements.publish.txt](requirements.publish.txt) を正本にします
+- publish 前処理は [scripts/Prepare-PythonRuntime.ps1](scripts/Prepare-PythonRuntime.ps1) で行います
+- 配布用ランタイムの staging 先は Web プロジェクト配下の `obj/.../python-runtime` です
+- 本番既定値は [src/Shos.MarkDownConverter.Web/appsettings.Production.json](src/Shos.MarkDownConverter.Web/appsettings.Production.json) で `.python-runtime\Scripts\python.exe` を参照します
+
+Visual Studio からの発行前に、発行元の Windows 環境で `python` コマンドが利用できる状態にしてください。別の Python 実行ファイルを使いたい場合は、publish 時に `PythonBuildCommand` MSBuild プロパティで上書きできます。
+
+過去の試行で [src/Shos.MarkDownConverter.Web](src/Shos.MarkDownConverter.Web) 配下に `python-runtime` ディレクトリが残っている場合は、古い staging 生成物なので削除してから再発行してください。
+
 ## 詳細ドキュメント
 
 - セットアップ: [Documents/SetupGuide.md](Documents/SetupGuide.md)
@@ -56,6 +69,8 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 - `AllowedExtensions`: 受け付ける拡張子一覧
 
 `PythonExecutablePath` に `python` のようなコマンド名を指定した場合は、そのまま PATH 解決に委ねます。`\.\tools\python.exe` や `..\..\.venv\Scripts\python.exe` のような相対パスを指定した場合だけ、Web プロジェクトのルートを基準に絶対パスへ解決します。`MaxUploadSizeBytes` の既定値は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) から読み取ります。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
+
+Production では [src/Shos.MarkDownConverter.Web/appsettings.Production.json](src/Shos.MarkDownConverter.Web/appsettings.Production.json) により、発行物に同梱された `.python-runtime\Scripts\python.exe` を既定で参照します。Azure App Service では必要に応じて `MarkItDown__PythonExecutablePath` を App Settings から上書きしてください。
 
 ## ユーザーマニュアル
 

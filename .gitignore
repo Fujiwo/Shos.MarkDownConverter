@@ -1,4 +1,7 @@
 .vs/
 .venv/
+.python-runtime/
+**/.python-runtime/
+**/python-runtime/
 **/bin/
 **/obj/
