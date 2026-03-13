@@ -118,6 +118,26 @@ public sealed class ConvertEndpointTests
         Assert.Contains(payload.PossibleCauses, cause => cause.Contains("アップロード上限", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public async Task PostConvert_AllowsFileAtConfiguredSizeLimit()
+    {
+        await using var factory = new TestApplicationFactory(
+            MarkdownConversionResult.Success("# hello", "sample.md"),
+            new Dictionary<string, string?>
+            {
+                ["MarkItDown:MaxUploadSizeBytes"] = "128"
+            });
+        using var client = factory.CreateClient();
+        using var content = CreateMultipartContent("sample.docx", new string('a', 128));
+
+        using var response = await client.PostAsync("/api/convert", content);
+        var payload = await response.Content.ReadFromJsonAsync<ConvertResponseDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.Equal("# hello", payload.Markdown);
+    }
+
     private static MultipartFormDataContent CreateMultipartContent(string fileName, string contents)
     {
         var multipartContent = new MultipartFormDataContent();

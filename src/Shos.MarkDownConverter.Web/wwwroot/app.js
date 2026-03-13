@@ -134,8 +134,16 @@ async function copyResult() {
         return;
     }
 
-    await navigator.clipboard.writeText(resultOutput.value);
-    statusText.textContent = '変換結果をコピーしました。';
+    try {
+        if (!navigator.clipboard?.writeText) {
+            throw new Error('Clipboard API unavailable');
+        }
+
+        await navigator.clipboard.writeText(resultOutput.value);
+        statusText.textContent = '変換結果をコピーしました。';
+    } catch {
+        showError(buildClipboardError());
+    }
 }
 
 function downloadResult() {
@@ -271,4 +279,19 @@ function formatBytes(bytes) {
     }
 
     return `${(kiloBytes / 1024).toFixed(1)} MB`;
+}
+
+function buildClipboardError() {
+    return {
+        code: 'clipboard-write-failed',
+        message: '変換結果をクリップボードにコピーできませんでした。',
+        possibleCauses: [
+            'ブラウザーがクリップボード操作を許可していない可能性があります。',
+            '現在の実行環境が Clipboard API に対応していない可能性があります。'
+        ],
+        actions: [
+            'ブラウザーの権限設定を確認して再試行してください。',
+            '必要ならダウンロード機能を利用してください。'
+        ]
+    };
 }

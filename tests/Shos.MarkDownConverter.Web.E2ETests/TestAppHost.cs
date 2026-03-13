@@ -180,9 +180,34 @@ internal sealed class TestAppHost : IAsyncDisposable
         foreach (var filePath in Directory.GetFiles(buildOutputDirectory))
         {
             var destinationPath = Path.Combine(runDirectory, Path.GetFileName(filePath));
-            File.Copy(filePath, destinationPath, overwrite: true);
+            CopyFileWithRetry(filePath, destinationPath);
         }
 
         return runDirectory;
+    }
+
+    private static void CopyFileWithRetry(string sourcePath, string destinationPath)
+    {
+        const int maxAttempts = 5;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                using var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                using var destinationStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                sourceStream.CopyTo(destinationStream);
+                return;
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                if (attempt == maxAttempts)
+                {
+                    throw;
+                }
+
+                Thread.Sleep(TimeSpan.FromMilliseconds(200 * attempt));
+            }
+        }
     }
 }

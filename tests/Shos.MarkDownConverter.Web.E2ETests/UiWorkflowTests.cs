@@ -53,6 +53,38 @@ public sealed class UiWorkflowTests
     }
 
     [Fact]
+    public async Task CopyFailure_ShowsUserFacingError()
+    {
+        await using var host = await TestAppHost.StartAsync();
+        var samplePath = CreateTempFile("sample.txt", "clipboard failure");
+
+        await using var browserSession = await BrowserSession.StartAsync();
+        var page = await browserSession.Context.NewPageAsync();
+
+        await PreparePageAsync(page, host.BaseUrl);
+        await SelectFileAsync(page, samplePath, "sample.txt");
+        await page.ClickAsync("#convert-button");
+        await WaitForSuccessfulConversionAsync(page);
+
+        await page.EvaluateAsync(@"() => {
+            Object.defineProperty(navigator, 'clipboard', {
+                configurable: true,
+                value: {
+                    writeText: () => Promise.reject(new Error('denied'))
+                }
+            });
+        }");
+
+        await page.ClickAsync("#copy-button");
+        await page.WaitForFunctionAsync("() => document.getElementById('error-panel') && !document.getElementById('error-panel').hidden");
+
+        var errorMessage = await page.TextContentAsync("#error-message");
+        var actionText = await page.TextContentAsync("#error-actions");
+        Assert.Contains("クリップボードにコピーできませんでした", errorMessage);
+        Assert.Contains("ダウンロード機能", actionText);
+    }
+
+    [Fact]
     public async Task UnsupportedExtension_ShowsErrorMessage()
     {
         await using var host = await TestAppHost.StartAsync();

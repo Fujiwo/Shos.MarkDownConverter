@@ -10,10 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 var converterOptionsSection = builder.Configuration.GetSection(MarkItDownOptions.SectionName);
 var maxUploadSize = converterOptionsSection.GetValue<long?>(nameof(MarkItDownOptions.MaxUploadSizeBytes))
 	?? MarkItDownOptions.DefaultMaxUploadSizeBytes;
+var multipartBodyLengthLimit = maxUploadSize + (64 * 1024L);
 
 builder.Services.Configure<FormOptions>(options =>
 {
-	options.MultipartBodyLengthLimit = maxUploadSize;
+	options.MultipartBodyLengthLimit = multipartBodyLengthLimit;
 });
 
 builder.Services
@@ -53,7 +54,7 @@ app.Use(async (context, next) =>
 	if (HttpMethods.IsPost(context.Request.Method)
 		&& context.Request.Path.Equals("/api/convert", StringComparison.OrdinalIgnoreCase)
 		&& context.Request.ContentLength is long contentLength
-		&& contentLength > maxUploadSize)
+		&& contentLength > multipartBodyLengthLimit)
 	{
 		await Results.Json(
 			CreateErrorResponse(CreateFileTooLargeError(maxUploadSize)),
