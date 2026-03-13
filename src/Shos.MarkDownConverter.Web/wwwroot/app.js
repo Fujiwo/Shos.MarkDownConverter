@@ -82,10 +82,26 @@ async function submitForm(event) {
             method: 'POST',
             body: formData
         });
-        const payload = await response.json();
+        const payload = await readResponsePayload(response);
 
         if (!response.ok) {
-            showError(payload);
+            showError(buildServerError(response, payload));
+            return;
+        }
+
+        if (!payload || typeof payload.markdown !== 'string' || typeof payload.downloadFileName !== 'string') {
+            showError({
+                code: 'unexpected-success-payload',
+                message: '変換結果の受信に失敗しました。',
+                possibleCauses: [
+                    'サーバーが想定外の応答を返しました。',
+                    'アプリケーションの内部エラーで応答形式が崩れた可能性があります。'
+                ],
+                actions: [
+                    '時間をおいて再試行してください。',
+                    '問題が続く場合はアプリケーションログを確認してください。'
+                ]
+            });
             return;
         }
 
@@ -96,10 +112,10 @@ async function submitForm(event) {
     } catch {
         showError({
             code: 'network-failure',
-            message: '通信に失敗しました。アプリケーションに接続できません。',
+            message: 'サーバーに接続できませんでした。',
             possibleCauses: [
                 'Web アプリが起動していない可能性があります。',
-                '一時的な通信障害が発生している可能性があります。'
+                'ネットワーク接続またはローカル通信に問題がある可能性があります。'
             ],
             actions: [
                 'サーバーが起動しているか確認してください。',
@@ -156,6 +172,63 @@ function showError(payload) {
     });
 
     statusText.textContent = '変換に失敗しました。';
+}
+
+async function readResponsePayload(response) {
+    const responseText = await response.text();
+    if (!responseText) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(responseText);
+    } catch {
+        return {
+            rawText: responseText
+        };
+    }
+}
+
+function buildServerError(response, payload) {
+    if (isStructuredErrorPayload(payload)) {
+        return payload;
+    }
+
+    if (response.status >= 500) {
+        return {
+            code: 'server-error',
+            message: 'サーバー内部でエラーが発生し、変換を完了できませんでした。',
+            possibleCauses: [
+                'アプリケーション内部で例外が発生した可能性があります。',
+                'MarkItDown 実行中に想定外の障害が起きた可能性があります。'
+            ],
+            actions: [
+                '時間をおいて再試行してください。',
+                '問題が続く場合はアプリケーションログを確認してください。'
+            ]
+        };
+    }
+
+    return {
+        code: 'unexpected-error-payload',
+        message: '変換に失敗しましたが、詳細なエラー情報を取得できませんでした。',
+        possibleCauses: [
+            'サーバーが想定外の形式でエラーを返しました。',
+            'アプリケーションの一部で応答生成に失敗した可能性があります。'
+        ],
+        actions: [
+            '時間をおいて再試行してください。',
+            '問題が続く場合はアプリケーションログを確認してください。'
+        ]
+    };
+}
+
+function isStructuredErrorPayload(payload) {
+    return Boolean(
+        payload &&
+        typeof payload.message === 'string' &&
+        Array.isArray(payload.possibleCauses) &&
+        Array.isArray(payload.actions));
 }
 
 function clearError() {

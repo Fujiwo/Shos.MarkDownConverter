@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shos.MarkDownConverter.Web.Services;
@@ -76,6 +77,22 @@ public sealed class ConvertEndpointTests
         Assert.Contains("Python を確認してください。", payload.Actions);
     }
 
+    [Fact]
+    public async Task PostConvert_ReturnsProblemDetails_WhenUnhandledExceptionOccurs()
+    {
+        await using var factory = new ExceptionApplicationFactory();
+        using var client = factory.CreateClient();
+        using var content = CreateMultipartContent("sample.docx", "dummy");
+
+        using var response = await client.PostAsync("/api/convert", content);
+        var payload = await response.Content.ReadFromJsonAsync<ProblemDetailsDto>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.Equal("Unexpected error", payload.Title);
+        Assert.Contains("予期しないエラー", payload.Detail);
+    }
+
     private static MultipartFormDataContent CreateMultipartContent(string fileName, string contents)
     {
         var multipartContent = new MultipartFormDataContent();
@@ -102,6 +119,18 @@ public sealed class ConvertEndpointTests
         }
     }
 
+    private sealed class ExceptionApplicationFactory : WebApplicationFactory<Program>
+    {
+        protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+        {
+            builder.ConfigureTestServices(services =>
+            {
+                services.RemoveAll<IMarkdownConversionService>();
+                services.AddSingleton<IMarkdownConversionService>(new ThrowingMarkdownConversionService());
+            });
+        }
+    }
+
     private sealed class StubMarkdownConversionService : IMarkdownConversionService
     {
         private readonly MarkdownConversionResult _result;
@@ -117,7 +146,17 @@ public sealed class ConvertEndpointTests
         }
     }
 
+    private sealed class ThrowingMarkdownConversionService : IMarkdownConversionService
+    {
+        public Task<MarkdownConversionResult> ConvertAsync(Microsoft.AspNetCore.Http.IFormFile file, CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException("unexpected failure");
+        }
+    }
+
     private sealed record ConvertResponseDto(string Markdown, string DownloadFileName);
 
     private sealed record ErrorResponseDto(string Code, string Message, IReadOnlyList<string> PossibleCauses, IReadOnlyList<string> Actions);
+
+    private sealed record ProblemDetailsDto(string Title, string Detail);
 }
