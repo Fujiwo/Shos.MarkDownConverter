@@ -58,6 +58,12 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 4. `コピー` でクリップボードにコピーできます。
 5. `ダウンロード` で `.md` ファイルとして保存できます。
 
+エラー時は、画面に次の 3 点を表示します。
+
+- 何が起きたかの要約
+- 考えられる原因
+- 次に試す対処方法
+
 ## 対応ファイル形式の考え方
 
 アプリケーションは MarkItDown の CLI をそのまま利用し、変換ルールを C# 側で再実装しません。既定の拡張子一覧は、日常的に扱うことが多い文書、表計算、テキスト、基本画像形式に絞っています。
@@ -82,11 +88,13 @@ dotnet test Shos.MarkDownConverter.slnx
 
 - `MarkItDown:PythonExecutablePath` が正しいか確認してください。
 - `.\.venv\Scripts\python.exe --version` が通るか確認してください。
+- 画面上の「考えられる原因」と「対処方法」に従って設定値を見直してください。
 
 ### MarkItDown が見つからない
 
 - `.\.venv\Scripts\python.exe -m pip show markitdown` でインストール状態を確認してください。
 - アプリが `.venv\Scripts\python.exe` を参照しているか確認してください。
+- 必要なら `\.\.venv\Scripts\python.exe -m pip install "markitdown[all]"` を再実行してください。
 
 ### 一部形式だけ失敗する
 
@@ -97,6 +105,7 @@ dotnet test Shos.MarkDownConverter.slnx
 
 - アプリケーションログで標準エラー出力と終了コードを確認してください。
 - ファイルサイズ上限と許可拡張子を確認してください。
+- UI に表示される原因候補と対処方法を優先して確認してください。
 
 ## 既知の制約
 

@@ -7,43 +7,71 @@ public sealed class MarkItDownErrorFormatter
         var stderr = standardError.Trim();
         if (ContainsAny(stderr, "No module named", "ModuleNotFoundError") && stderr.Contains("markitdown", StringComparison.OrdinalIgnoreCase))
         {
-            return DependencyMissing("MarkItDown が見つかりません。Python 環境に markitdown をインストールしてください。");
+            return new ConversionError(
+                StatusCodes.Status503ServiceUnavailable,
+                "markitdown-missing",
+                "MarkItDown が Python 環境に見つかりません。",
+                [
+                    "選択された Python 環境に markitdown パッケージがインストールされていません。",
+                    "アプリが想定と異なる Python 実行環境を参照している可能性があります。"
+                ],
+                [
+                    "対象の Python 環境で markitdown をインストールしてください。",
+                    "PythonExecutablePath の設定先が正しいか確認してください。"
+                ],
+                $"exitCode={exitCode}; stderr={stderr}");
         }
 
         if (ContainsAny(stderr, "No such file or directory", "can't open file", "is not recognized") && stderr.Contains("python", StringComparison.OrdinalIgnoreCase))
         {
-            return DependencyMissing("Python 実行環境が見つかりません。設定した Python 実行パスを確認してください。");
+            return new ConversionError(
+                StatusCodes.Status503ServiceUnavailable,
+                "python-missing",
+                "Python 実行環境が見つかりません。",
+                [
+                    "設定された Python 実行パスが存在しません。",
+                    "サーバーに Python がインストールされていない可能性があります。"
+                ],
+                [
+                    "PythonExecutablePath の設定値を確認してください。",
+                    "Python をインストール後、アプリを再起動してください。"
+                ],
+                $"exitCode={exitCode}; stderr={stderr}");
         }
 
         return new ConversionError(
             StatusCodes.Status422UnprocessableEntity,
-            "ファイルを Markdown に変換できませんでした。ファイル形式と MarkItDown の追加依存関係を確認してください。",
+            "conversion-failed",
+            "ファイルを Markdown に変換できませんでした。",
             [
-                "対応形式か確認してください。",
-                "必要な MarkItDown の追加依存関係がインストールされているか確認してください。",
-                "詳細はアプリケーションログを確認してください。"
+                "入力ファイルの内容が破損している可能性があります。",
+                "この形式に必要な MarkItDown の追加依存関係が不足している可能性があります。",
+                "MarkItDown 自体がこのファイル内容を解釈できなかった可能性があります。"
+            ],
+            [
+                "元ファイルを開いて破損していないか確認してください。",
+                "必要なら markitdown の追加依存関係を含めて再インストールしてください。",
+                "問題が続く場合はアプリケーションログを確認してください。"
             ],
             $"exitCode={exitCode}; stderr={stderr}");
     }
 
     public ConversionError FormatLaunchFailure(Exception exception)
     {
-        return DependencyMissing(
-            "Python 実行環境を起動できませんでした。設定した Python 実行パスを確認してください。",
-            exception.ToString());
-    }
-
-    private static ConversionError DependencyMissing(string message, string? diagnosticDetails = null)
-    {
         return new ConversionError(
             StatusCodes.Status503ServiceUnavailable,
-            message,
+            "python-launch-failed",
+            "Python 実行環境を起動できませんでした。",
             [
-                "Python のインストール状態を確認してください。",
-                "markitdown パッケージが利用可能か確認してください。",
-                "README のセットアップ手順に沿って環境を再確認してください。"
+                "設定した Python 実行パスにアクセスできません。",
+                "実行権限やパス設定が正しくない可能性があります。"
             ],
-            diagnosticDetails);
+            [
+                "PythonExecutablePath の設定値を確認してください。",
+                "対象の Python をコマンドラインから直接起動できるか確認してください。",
+                "セットアップ手順に沿って環境を再確認してください。"
+            ],
+            exception.ToString());
     }
 
     private static bool ContainsAny(string text, params string[] fragments)
@@ -52,4 +80,10 @@ public sealed class MarkItDownErrorFormatter
     }
 }
 
-public sealed record ConversionError(int StatusCode, string Message, IReadOnlyList<string> Tips, string? DiagnosticDetails);
+public sealed record ConversionError(
+    int StatusCode,
+    string Code,
+    string Message,
+    IReadOnlyList<string> PossibleCauses,
+    IReadOnlyList<string> Actions,
+    string? DiagnosticDetails);

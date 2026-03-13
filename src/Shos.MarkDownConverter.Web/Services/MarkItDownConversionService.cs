@@ -78,7 +78,12 @@ public sealed class MarkItDownConversionService : IMarkdownConversionService
             {
                 var error = new ConversionError(
                     StatusCodes.Status502BadGateway,
-                    "変換結果を取得できませんでした。再度お試しください。",
+                    "output-missing",
+                    "変換結果を取得できませんでした。",
+                    [
+                        "MarkItDown の実行は完了しましたが、出力ファイルが作成されませんでした。",
+                        "一時ディレクトリへの書き込みに失敗した可能性があります。"
+                    ],
                     [
                         "しばらく待ってから再試行してください。",
                         "問題が続く場合はアプリケーションログを確認してください。"

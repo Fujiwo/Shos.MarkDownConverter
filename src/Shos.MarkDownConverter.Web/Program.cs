@@ -56,7 +56,13 @@ app.MapPost("/api/convert", async (
 	var validation = validator.Validate(file);
 	if (!validation.IsValid)
 	{
-		return Results.BadRequest(new ErrorResponse(validation.Message!, Array.Empty<string>()));
+		return Results.Json(
+			new ErrorResponse(
+				validation.Error!.Code,
+				validation.Error.Message,
+				validation.Error.PossibleCauses,
+				validation.Error.Actions),
+			statusCode: validation.Error.StatusCode);
 	}
 
 	var result = await converter.ConvertAsync(file!, cancellationToken);
@@ -66,7 +72,11 @@ app.MapPost("/api/convert", async (
 	}
 
 	return Results.Json(
-		new ErrorResponse(result.Error!.Message, result.Error.Tips),
+		new ErrorResponse(
+			result.Error!.Code,
+			result.Error.Message,
+			result.Error.PossibleCauses,
+			result.Error.Actions),
 		statusCode: result.Error.StatusCode);
 })
 .DisableAntiforgery();

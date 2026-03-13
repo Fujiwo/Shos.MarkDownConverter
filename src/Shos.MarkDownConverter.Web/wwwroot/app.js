@@ -8,7 +8,8 @@ const convertButton = document.getElementById('convert-button');
 const statusText = document.getElementById('status-text');
 const errorPanel = document.getElementById('error-panel');
 const errorMessage = document.getElementById('error-message');
-const errorTips = document.getElementById('error-tips');
+const errorCauses = document.getElementById('error-causes');
+const errorActions = document.getElementById('error-actions');
 const resultPanel = document.getElementById('result-panel');
 const resultOutput = document.getElementById('result-output');
 const copyButton = document.getElementById('copy-button');
@@ -94,8 +95,16 @@ async function submitForm(event) {
         statusText.textContent = '変換が完了しました。';
     } catch {
         showError({
-            message: '通信に失敗しました。アプリケーションが起動しているか確認してください。',
-            tips: ['サーバーが起動しているか確認してください。', '時間をおいて再試行してください。']
+            code: 'network-failure',
+            message: '通信に失敗しました。アプリケーションに接続できません。',
+            possibleCauses: [
+                'Web アプリが起動していない可能性があります。',
+                '一時的な通信障害が発生している可能性があります。'
+            ],
+            actions: [
+                'サーバーが起動しているか確認してください。',
+                '時間をおいて再試行してください。'
+            ]
         });
     } finally {
         setBusy(false, statusText.textContent || '');
@@ -129,13 +138,21 @@ function downloadResult() {
 function showError(payload) {
     errorPanel.hidden = false;
     errorMessage.textContent = payload.message || 'エラーが発生しました。';
-    errorTips.innerHTML = '';
-    const tips = Array.isArray(payload.tips) ? payload.tips : [];
+    errorCauses.innerHTML = '';
+    errorActions.innerHTML = '';
+    const causes = Array.isArray(payload.possibleCauses) ? payload.possibleCauses : [];
+    const actions = Array.isArray(payload.actions) ? payload.actions : [];
 
-    tips.forEach((tip) => {
+    causes.forEach((cause) => {
         const item = document.createElement('li');
-        item.textContent = tip;
-        errorTips.appendChild(item);
+        item.textContent = cause;
+        errorCauses.appendChild(item);
+    });
+
+    actions.forEach((action) => {
+        const item = document.createElement('li');
+        item.textContent = action;
+        errorActions.appendChild(item);
     });
 
     statusText.textContent = '変換に失敗しました。';
@@ -144,7 +161,8 @@ function showError(payload) {
 function clearError() {
     errorPanel.hidden = true;
     errorMessage.textContent = '';
-    errorTips.innerHTML = '';
+    errorCauses.innerHTML = '';
+    errorActions.innerHTML = '';
 }
 
 function setBusy(isBusy, message) {

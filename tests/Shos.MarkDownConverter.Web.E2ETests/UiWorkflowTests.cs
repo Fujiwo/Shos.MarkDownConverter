@@ -43,9 +43,14 @@ public sealed class UiWorkflowTests
         await SelectFileAsync(page, samplePath, "sample.exe");
         await page.ClickAsync("#convert-button");
         await page.WaitForFunctionAsync("() => document.getElementById('error-panel') && !document.getElementById('error-panel').hidden");
+        await page.WaitForFunctionAsync("() => document.querySelectorAll('#error-causes li').length > 0 && document.querySelectorAll('#error-actions li').length > 0");
 
         var errorMessage = await page.TextContentAsync("#error-message");
-        Assert.Contains("このファイル形式は受け付けていません", errorMessage);
+        var causeText = await page.TextContentAsync("#error-causes");
+        var actionText = await page.TextContentAsync("#error-actions");
+        Assert.Contains("このファイル形式は現在の設定では受け付けていません", errorMessage);
+        Assert.Contains("許可対象", causeText);
+        Assert.Contains("対応拡張子一覧", actionText);
     }
 
     [Fact]
@@ -64,9 +69,14 @@ public sealed class UiWorkflowTests
         await SelectFileAsync(page, samplePath, "sample.txt");
         await page.ClickAsync("#convert-button");
         await page.WaitForFunctionAsync("() => document.getElementById('error-panel') && !document.getElementById('error-panel').hidden");
+        await page.WaitForFunctionAsync("() => document.querySelectorAll('#error-causes li').length > 0 && document.querySelectorAll('#error-actions li').length > 0");
 
         var errorMessage = await page.TextContentAsync("#error-message");
+        var causeText = await page.TextContentAsync("#error-causes");
+        var actionText = await page.TextContentAsync("#error-actions");
         Assert.Contains("Python 実行環境", errorMessage);
+        Assert.Contains("Python 実行パス", causeText);
+        Assert.Contains("PythonExecutablePath", actionText);
     }
 
     private static async Task PreparePageAsync(IPage page, string baseUrl)

@@ -9,11 +9,13 @@ internal sealed class TestAppHost : IAsyncDisposable
 {
     private readonly Process _process;
     private readonly StringBuilder _output = new();
+    private readonly string? _runDirectory;
 
-    private TestAppHost(Process process, string baseUrl)
+    private TestAppHost(Process process, string baseUrl, string? runDirectory)
     {
         _process = process;
         BaseUrl = baseUrl;
+        _runDirectory = runDirectory;
 
         _process.OutputDataReceived += (_, eventArgs) =>
         {
@@ -40,12 +42,16 @@ internal sealed class TestAppHost : IAsyncDisposable
         var projectDirectory = Path.Combine(repoRoot, "src", "Shos.MarkDownConverter.Web");
         var port = GetFreeTcpPort();
         var baseUrl = $"http://127.0.0.1:{port}";
-        var projectDllPath = Path.Combine(projectDirectory, "bin", "Debug", "net10.0", "Shos.MarkDownConverter.Web.dll");
+        var buildOutputDirectory = Path.Combine(projectDirectory, "bin", "Debug", "net10.0");
+        var projectDllPath = Path.Combine(buildOutputDirectory, "Shos.MarkDownConverter.Web.dll");
 
         if (!File.Exists(projectDllPath))
         {
             throw new FileNotFoundException("Web application output was not found. Build the solution before running E2E tests.", projectDllPath);
         }
+
+        var runDirectory = CreateRunDirectory(buildOutputDirectory);
+        var runnableDllPath = Path.Combine(runDirectory, "Shos.MarkDownConverter.Web.dll");
 
         var startInfo = new ProcessStartInfo
         {
@@ -57,10 +63,11 @@ internal sealed class TestAppHost : IAsyncDisposable
             CreateNoWindow = true
         };
 
-        startInfo.ArgumentList.Add(projectDllPath);
+        startInfo.ArgumentList.Add(runnableDllPath);
         startInfo.ArgumentList.Add("--urls");
         startInfo.ArgumentList.Add(baseUrl);
         startInfo.Environment["ASPNETCORE_ENVIRONMENT"] = "Development";
+        startInfo.Environment["MarkItDown__PythonExecutablePath"] = Path.Combine(repoRoot, ".venv", "Scripts", "python.exe");
 
         if (environmentOverrides is not null)
         {
@@ -71,7 +78,7 @@ internal sealed class TestAppHost : IAsyncDisposable
         }
 
         var process = new Process { StartInfo = startInfo };
-        var host = new TestAppHost(process, baseUrl);
+        var host = new TestAppHost(process, baseUrl, runDirectory);
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
@@ -93,6 +100,17 @@ internal sealed class TestAppHost : IAsyncDisposable
         finally
         {
             _process.Dispose();
+
+            if (!string.IsNullOrWhiteSpace(_runDirectory) && Directory.Exists(_runDirectory))
+            {
+                try
+                {
+                    Directory.Delete(_runDirectory, recursive: true);
+                }
+                catch
+                {
+                }
+            }
         }
     }
 
@@ -152,5 +170,19 @@ internal sealed class TestAppHost : IAsyncDisposable
         }
 
         throw new DirectoryNotFoundException("Repository root could not be located from the test output directory.");
+    }
+
+    private static string CreateRunDirectory(string buildOutputDirectory)
+    {
+        var runDirectory = Path.Combine(Path.GetTempPath(), $"shos-markdownconverter-e2e-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(runDirectory);
+
+        foreach (var filePath in Directory.GetFiles(buildOutputDirectory))
+        {
+            var destinationPath = Path.Combine(runDirectory, Path.GetFileName(filePath));
+            File.Copy(filePath, destinationPath, overwrite: true);
+        }
+
+        return runDirectory;
     }
 }

@@ -15,7 +15,9 @@ public sealed class UploadValidationServiceTests
         var result = service.Validate(null);
 
         Assert.False(result.IsValid);
-        Assert.Equal("変換するファイルを選択してください。", result.Message);
+        Assert.Equal("file-required", result.Error!.Code);
+        Assert.Equal("変換するファイルが選択されていません。", result.Error.Message);
+        Assert.Contains("ファイル名が画面に表示", string.Join(' ', result.Error.Actions));
     }
 
     [Fact]
@@ -27,7 +29,9 @@ public sealed class UploadValidationServiceTests
         var result = service.Validate(file);
 
         Assert.False(result.IsValid);
-        Assert.Equal("このファイル形式は受け付けていません。対応拡張子を確認してください。", result.Message);
+        Assert.Equal("unsupported-extension", result.Error!.Code);
+        Assert.Equal("このファイル形式は現在の設定では受け付けていません。", result.Error.Message);
+        Assert.Contains("対応拡張子一覧", string.Join(' ', result.Error.Actions));
     }
 
     [Fact]
@@ -39,7 +43,8 @@ public sealed class UploadValidationServiceTests
         var result = service.Validate(file);
 
         Assert.False(result.IsValid);
-        Assert.Contains("ファイルサイズが上限を超えています", result.Message);
+        Assert.Equal("file-too-large", result.Error!.Code);
+        Assert.Contains("ファイルサイズが上限を超えています", result.Error.Message);
     }
 
     [Fact]

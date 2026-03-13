@@ -31,7 +31,9 @@ public sealed class ConvertEndpointTests
     {
         var error = new ConversionError(
             StatusCodes.Status422UnprocessableEntity,
+            "conversion-failed",
             "変換できませんでした。",
+            ["入力ファイルを解釈できません。"],
             ["対応形式を確認してください。"],
             null);
 
@@ -44,7 +46,9 @@ public sealed class ConvertEndpointTests
 
         Assert.Equal((HttpStatusCode)StatusCodes.Status422UnprocessableEntity, response.StatusCode);
         Assert.NotNull(payload);
+        Assert.Equal("conversion-failed", payload.Code);
         Assert.Equal("変換できませんでした。", payload.Message);
+        Assert.Contains("対応形式を確認してください。", payload.Actions);
     }
 
     [Fact]
@@ -52,7 +56,9 @@ public sealed class ConvertEndpointTests
     {
         var error = new ConversionError(
             StatusCodes.Status503ServiceUnavailable,
+            "python-missing",
             "Python 実行環境が見つかりません。",
+            ["設定された Python 実行パスが存在しません。"],
             ["Python を確認してください。"],
             null);
 
@@ -65,7 +71,9 @@ public sealed class ConvertEndpointTests
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.NotNull(payload);
+        Assert.Equal("python-missing", payload.Code);
         Assert.Equal("Python 実行環境が見つかりません。", payload.Message);
+        Assert.Contains("Python を確認してください。", payload.Actions);
     }
 
     private static MultipartFormDataContent CreateMultipartContent(string fileName, string contents)
@@ -111,5 +119,5 @@ public sealed class ConvertEndpointTests
 
     private sealed record ConvertResponseDto(string Markdown, string DownloadFileName);
 
-    private sealed record ErrorResponseDto(string Message, IReadOnlyList<string> Tips);
+    private sealed record ErrorResponseDto(string Code, string Message, IReadOnlyList<string> PossibleCauses, IReadOnlyList<string> Actions);
 }
