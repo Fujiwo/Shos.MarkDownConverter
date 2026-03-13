@@ -3,7 +3,7 @@ namespace Shos.MarkDownConverter.Web.Options;
 public sealed class MarkItDownOptions
 {
     public const string SectionName = "MarkItDown";
-    public const long DefaultMaxUploadSizeBytes = 10 * 1024 * 1024;
+    public const long DefaultMaxUploadSizeBytes = 100 * 1024 * 1024;
     public static readonly string[] DefaultAllowedExtensions =
     [
         ".pdf",
