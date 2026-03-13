@@ -18,6 +18,12 @@
 
 でパッケージ情報が表示されるか確認してください。
 
+見つからない場合は、次を実行してください。
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install "markitdown[all]"
+```
+
 ## 対応形式なのに変換できない
 
 - `markitdown[all]` を再インストールしてください。
@@ -32,4 +38,4 @@
 
 ## UI テストが動かない
 
-Playwright ブラウザーが未導入の可能性があります。手順は [Document/TestGuide.md](TestGuide.md) を参照してください。
+Playwright ブラウザーが未導入の可能性があります。手順は [Documents/TestGuide.md](TestGuide.md) を参照してください。

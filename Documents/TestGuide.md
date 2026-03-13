@@ -6,6 +6,8 @@
 dotnet test Shos.MarkDownConverter.slnx
 ```
 
+単体テストでは入力検証、設定正規化、エラー整形、変換サービス、キャンセル時の外部プロセス回収を確認します。結合テストでは正常系、Python 起動失敗、サイズ超過、未処理例外を含む JSON 契約を確認します。
+
 ## UI を含む E2E テスト
 
 UI テストは Playwright for .NET を使います。初回のみブラウザーの導入が必要です。

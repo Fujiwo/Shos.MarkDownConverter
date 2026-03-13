@@ -34,10 +34,10 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 
 ## 詳細ドキュメント
 
-- セットアップ: [Document/SetupGuide.md](Document/SetupGuide.md)
-- ユーザーマニュアル: [Document/UserManual.md](Document/UserManual.md)
-- トラブルシューティング: [Document/Troubleshooting.md](Document/Troubleshooting.md)
-- テストガイド: [Document/TestGuide.md](Document/TestGuide.md)
+- セットアップ: [Documents/SetupGuide.md](Documents/SetupGuide.md)
+- ユーザーマニュアル: [Documents/UserManual.md](Documents/UserManual.md)
+- トラブルシューティング: [Documents/Troubleshooting.md](Documents/Troubleshooting.md)
+- テストガイド: [Documents/TestGuide.md](Documents/TestGuide.md)
 
 ## 設定
 
@@ -82,7 +82,7 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 dotnet test Shos.MarkDownConverter.slnx
 ```
 
-単体テストでは入力検証、設定正規化、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形、キャンセル時の外部プロセス回収を検証します。結合テストではアップロード API の正常系、変換失敗、Python 起動失敗、サイズ超過、未処理例外時の応答を検証します。UI を含む E2E テストではコピー、ダウンロード、非対応拡張子、サイズ超過、Python 起動失敗の表示を確認します。詳細は [Document/TestGuide.md](Document/TestGuide.md) を参照してください。
+単体テストでは入力検証、設定正規化、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形、キャンセル時の外部プロセス回収を検証します。結合テストではアップロード API の正常系、変換失敗、Python 起動失敗、サイズ超過、未処理例外時の応答を検証します。UI を含む E2E テストではコピー、ダウンロード、非対応拡張子、サイズ超過、Python 起動失敗の表示を確認します。詳細は [Documents/TestGuide.md](Documents/TestGuide.md) を参照してください。
 
 ## トラブルシューティング
 
