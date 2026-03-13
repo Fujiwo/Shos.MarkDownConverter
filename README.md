@@ -43,12 +43,12 @@ dotnet run --project src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.c
 
 MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) と [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) の `MarkItDown` セクションで変更できます。
 
-- `PythonExecutablePath`: Python 実行ファイルのパス。開発環境では `.venv\Scripts\python.exe` を使う想定です。
+- `PythonExecutablePath`: Python 実行ファイルのパス。`python` のようなコマンド名、または相対パスと絶対パスを指定できます。開発環境では `.venv\Scripts\python.exe` を使う想定です。
 - `ModuleName`: 既定では `markitdown`
 - `MaxUploadSizeBytes`: アップロード上限
 - `AllowedExtensions`: 受け付ける拡張子一覧
 
-`PythonExecutablePath` は相対パスでも指定でき、Web プロジェクトのルートを基準に絶対パスへ解決されます。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
+`PythonExecutablePath` に `python` のようなコマンド名を指定した場合は、そのまま PATH 解決に委ねます。`.\tools\python.exe` や `..\..\.venv\Scripts\python.exe` のような相対パスを指定した場合だけ、Web プロジェクトのルートを基準に絶対パスへ解決します。共通設定は [src/Shos.MarkDownConverter.Web/appsettings.json](src/Shos.MarkDownConverter.Web/appsettings.json) に置き、開発環境固有の Python パスは [src/Shos.MarkDownConverter.Web/appsettings.Development.json](src/Shos.MarkDownConverter.Web/appsettings.Development.json) で上書きする運用です。環境ごとに変更する場合は、ユーザーシークレットまたは環境変数を優先してください。
 
 ## ユーザーマニュアル
 
@@ -63,6 +63,8 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 - 何が起きたかの要約
 - 考えられる原因
 - 次に試す対処方法
+
+サーバーが ProblemDetails を返した場合は、その内容を優先して表示します。原因候補や対処方法が付かないエラーでは、空のセクションは表示しません。
 
 ## 対応ファイル形式の考え方
 
@@ -80,15 +82,22 @@ MarkItDown 呼び出しに関する設定は [src/Shos.MarkDownConverter.Web/app
 dotnet test Shos.MarkDownConverter.slnx
 ```
 
-単体テストでは入力検証、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形を検証します。結合テストではアップロード API の正常系、変換失敗、Python 不在相当の応答を検証します。UI を含む E2E テストを実行する場合は、Playwright ブラウザーの導入が必要です。詳細は [Document/TestGuide.md](Document/TestGuide.md) を参照してください。
+単体テストでは入力検証、設定正規化、対応形式判定、MarkItDown 呼び出しラッパー、エラー整形、キャンセル時の外部プロセス回収を検証します。結合テストではアップロード API の正常系、変換失敗、Python 起動失敗、サイズ超過、未処理例外時の応答を検証します。UI を含む E2E テストではコピー、ダウンロード、非対応拡張子、サイズ超過、Python 起動失敗の表示を確認します。詳細は [Document/TestGuide.md](Document/TestGuide.md) を参照してください。
 
 ## トラブルシューティング
 
 ### Python が見つからない
 
 - `MarkItDown:PythonExecutablePath` が正しいか確認してください。
+- `PythonExecutablePath` がコマンド名なら PATH から解決できるか、相対パスなら Web プロジェクト基準で正しい場所を指すか確認してください。
 - `.\.venv\Scripts\python.exe --version` が通るか確認してください。
 - 画面上の「考えられる原因」と「対処方法」に従って設定値を見直してください。
+
+### ファイルサイズが上限を超える
+
+- 画面に表示されるサイズ上限を確認してください。
+- サイズ超過時は API が 413 と構造化エラーを返し、UI に上限超過メッセージを表示します。
+- 必要なら `MaxUploadSizeBytes` を見直してください。
 
 ### MarkItDown が見つからない
 

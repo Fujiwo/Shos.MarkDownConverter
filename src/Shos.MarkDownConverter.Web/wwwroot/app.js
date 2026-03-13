@@ -10,6 +10,8 @@ const errorPanel = document.getElementById('error-panel');
 const errorMessage = document.getElementById('error-message');
 const errorCauses = document.getElementById('error-causes');
 const errorActions = document.getElementById('error-actions');
+const errorCauseSection = errorCauses.closest('.error-section');
+const errorActionSection = errorActions.closest('.error-section');
 const resultPanel = document.getElementById('result-panel');
 const resultOutput = document.getElementById('result-output');
 const copyButton = document.getElementById('copy-button');
@@ -171,6 +173,9 @@ function showError(payload) {
         errorActions.appendChild(item);
     });
 
+    errorCauseSection.hidden = causes.length === 0;
+    errorActionSection.hidden = actions.length === 0;
+
     statusText.textContent = '変換に失敗しました。';
 }
 
@@ -194,14 +199,20 @@ function buildServerError(response, payload) {
         return payload;
     }
 
+    if (isProblemDetailsPayload(payload)) {
+        return {
+            code: 'problem-details',
+            message: payload.detail || payload.title || 'サーバー内部でエラーが発生しました。',
+            possibleCauses: [],
+            actions: []
+        };
+    }
+
     if (response.status >= 500) {
         return {
             code: 'server-error',
-            message: 'サーバー内部でエラーが発生し、変換を完了できませんでした。',
-            possibleCauses: [
-                'アプリケーション内部で例外が発生した可能性があります。',
-                'MarkItDown 実行中に想定外の障害が起きた可能性があります。'
-            ],
+            message: 'サーバー内部でエラーが発生しました。',
+            possibleCauses: [],
             actions: [
                 '時間をおいて再試行してください。',
                 '問題が続く場合はアプリケーションログを確認してください。'
@@ -212,10 +223,7 @@ function buildServerError(response, payload) {
     return {
         code: 'unexpected-error-payload',
         message: '変換に失敗しましたが、詳細なエラー情報を取得できませんでした。',
-        possibleCauses: [
-            'サーバーが想定外の形式でエラーを返しました。',
-            'アプリケーションの一部で応答生成に失敗した可能性があります。'
-        ],
+        possibleCauses: [],
         actions: [
             '時間をおいて再試行してください。',
             '問題が続く場合はアプリケーションログを確認してください。'
@@ -231,11 +239,19 @@ function isStructuredErrorPayload(payload) {
         Array.isArray(payload.actions));
 }
 
+function isProblemDetailsPayload(payload) {
+    return Boolean(
+        payload &&
+        (typeof payload.title === 'string' || typeof payload.detail === 'string'));
+}
+
 function clearError() {
     errorPanel.hidden = true;
     errorMessage.textContent = '';
     errorCauses.innerHTML = '';
     errorActions.innerHTML = '';
+    errorCauseSection.hidden = false;
+    errorActionSection.hidden = false;
 }
 
 function setBusy(isBusy, message) {

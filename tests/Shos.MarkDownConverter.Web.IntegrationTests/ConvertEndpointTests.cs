@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shos.MarkDownConverter.Web.Services;
@@ -53,14 +54,14 @@ public sealed class ConvertEndpointTests
     }
 
     [Fact]
-    public async Task PostConvert_ReturnsServiceUnavailable_WhenPythonIsMissing()
+    public async Task PostConvert_ReturnsServiceUnavailable_WhenPythonLaunchFails()
     {
         var error = new ConversionError(
             StatusCodes.Status503ServiceUnavailable,
-            "python-missing",
-            "Python 実行環境が見つかりません。",
-            ["設定された Python 実行パスが存在しません。"],
-            ["Python を確認してください。"],
+            "python-launch-failed",
+            "Python 実行環境を起動できませんでした。",
+            ["設定した Python 実行パスにアクセスできません。"],
+            ["PythonExecutablePath の設定値を確認してください。"],
             null);
 
         await using var factory = new TestApplicationFactory(MarkdownConversionResult.Failure(error));
@@ -72,9 +73,9 @@ public sealed class ConvertEndpointTests
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.NotNull(payload);
-        Assert.Equal("python-missing", payload.Code);
-        Assert.Equal("Python 実行環境が見つかりません。", payload.Message);
-        Assert.Contains("Python を確認してください。", payload.Actions);
+        Assert.Equal("python-launch-failed", payload.Code);
+        Assert.Equal("Python 実行環境を起動できませんでした。", payload.Message);
+        Assert.Contains("PythonExecutablePath の設定値を確認してください。", payload.Actions);
     }
 
     [Fact]
@@ -93,6 +94,30 @@ public sealed class ConvertEndpointTests
         Assert.Contains("予期しないエラー", payload.Detail);
     }
 
+    [Fact]
+    public async Task PostConvert_ReturnsStructuredError_WhenPayloadIsTooLarge()
+    {
+        await using var factory = new TestApplicationFactory(
+            MarkdownConversionResult.Success("# hello", "sample.md"),
+            new Dictionary<string, string?>
+            {
+                ["MarkItDown:MaxUploadSizeBytes"] = "128"
+            });
+        using var client = factory.CreateClient();
+        using var content = CreateMultipartContent("sample.docx", new string('a', 2048));
+
+        using var response = await client.PostAsync("/api/convert", content);
+        var payload = await response.Content.ReadFromJsonAsync<ErrorResponseDto>();
+
+        Assert.True(
+            response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.RequestEntityTooLarge,
+            $"Expected 400 or 413 but got {(int)response.StatusCode} ({response.StatusCode}).");
+        Assert.NotNull(payload);
+        Assert.Equal("file-too-large", payload.Code);
+        Assert.Contains("ファイルサイズが上限を超えています", payload.Message);
+        Assert.Contains(payload.PossibleCauses, cause => cause.Contains("アップロード上限", StringComparison.Ordinal));
+    }
+
     private static MultipartFormDataContent CreateMultipartContent(string fileName, string contents)
     {
         var multipartContent = new MultipartFormDataContent();
@@ -103,14 +128,24 @@ public sealed class ConvertEndpointTests
     private sealed class TestApplicationFactory : WebApplicationFactory<Program>
     {
         private readonly MarkdownConversionResult _result;
+        private readonly IReadOnlyDictionary<string, string?>? _configurationOverrides;
 
-        public TestApplicationFactory(MarkdownConversionResult result)
+        public TestApplicationFactory(MarkdownConversionResult result, IReadOnlyDictionary<string, string?>? configurationOverrides = null)
         {
             _result = result;
+            _configurationOverrides = configurationOverrides;
         }
 
         protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
         {
+            if (_configurationOverrides is not null)
+            {
+                builder.ConfigureAppConfiguration((_, configurationBuilder) =>
+                {
+                    configurationBuilder.AddInMemoryCollection(_configurationOverrides);
+                });
+            }
+
             builder.ConfigureServices(services =>
             {
                 services.RemoveAll<IMarkdownConversionService>();

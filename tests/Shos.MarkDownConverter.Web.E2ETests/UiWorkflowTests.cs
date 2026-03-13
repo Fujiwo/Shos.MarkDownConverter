@@ -1,4 +1,5 @@
 using Microsoft.Playwright;
+using Xunit.Sdk;
 
 namespace Shos.MarkDownConverter.Web.E2ETests;
 
@@ -16,7 +17,7 @@ public sealed class UiWorkflowTests
         await PreparePageAsync(page, host.BaseUrl);
         await SelectFileAsync(page, samplePath, "sample.txt");
         await page.ClickAsync("#convert-button");
-        await page.WaitForFunctionAsync("() => document.getElementById('result-panel') && !document.getElementById('result-panel').hidden");
+        await WaitForSuccessfulConversionAsync(page);
 
         var resultText = await page.InputValueAsync("#result-output");
         Assert.Contains("# Sample", resultText);
@@ -28,6 +29,27 @@ public sealed class UiWorkflowTests
         });
 
         Assert.Equal("sample.md", download.SuggestedFilename);
+    }
+
+    [Fact]
+    public async Task ConvertTxt_AllowsCopyingMarkdownToClipboard()
+    {
+        await using var host = await TestAppHost.StartAsync();
+        var samplePath = CreateTempFile("sample.txt", "clipboard content");
+
+        await using var browserSession = await BrowserSession.StartAsync();
+        var page = await browserSession.Context.NewPageAsync();
+
+        await PreparePageAsync(page, host.BaseUrl);
+        await SelectFileAsync(page, samplePath, "sample.txt");
+        await page.ClickAsync("#convert-button");
+        await WaitForSuccessfulConversionAsync(page);
+
+        await page.ClickAsync("#copy-button");
+        await page.WaitForFunctionAsync("() => document.getElementById('status-text').textContent === '変換結果をコピーしました。'");
+
+        var clipboardText = await page.EvaluateAsync<string>("() => navigator.clipboard.readText()");
+        Assert.Contains("clipboard content", clipboardText);
     }
 
     [Fact]
@@ -79,6 +101,29 @@ public sealed class UiWorkflowTests
         Assert.Contains("PythonExecutablePath", actionText);
     }
 
+    [Fact]
+    public async Task FileTooLarge_ShowsStructuredErrorMessage()
+    {
+        await using var host = await TestAppHost.StartAsync(new Dictionary<string, string>
+        {
+            ["MarkItDown__MaxUploadSizeBytes"] = "128"
+        });
+        var samplePath = CreateTempFile("large.txt", new string('a', 2048));
+
+        await using var browserSession = await BrowserSession.StartAsync();
+        var page = await browserSession.Context.NewPageAsync();
+
+        await PreparePageAsync(page, host.BaseUrl);
+        await SelectFileAsync(page, samplePath, "large.txt");
+        await page.ClickAsync("#convert-button");
+        await page.WaitForFunctionAsync("() => document.getElementById('error-panel') && !document.getElementById('error-panel').hidden");
+
+        var errorMessage = await page.TextContentAsync("#error-message");
+        var causeText = await page.TextContentAsync("#error-causes");
+        Assert.Contains("ファイルサイズが上限を超えています", errorMessage);
+        Assert.Contains("アップロード上限", causeText);
+    }
+
     private static async Task PreparePageAsync(IPage page, string baseUrl)
     {
         await page.GotoAsync(baseUrl);
@@ -92,6 +137,29 @@ public sealed class UiWorkflowTests
         await page.WaitForFunctionAsync(
             "name => document.getElementById('selected-file') && document.getElementById('selected-file').textContent === name",
             expectedName);
+    }
+
+    private static async Task WaitForSuccessfulConversionAsync(IPage page)
+    {
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(60);
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            if (await page.Locator("#result-panel").IsVisibleAsync())
+            {
+                return;
+            }
+
+            if (await page.Locator("#error-panel").IsVisibleAsync())
+            {
+                var errorMessage = await page.TextContentAsync("#error-message") ?? "エラー内容を取得できませんでした。";
+                throw new XunitException($"変換が成功せず、エラーが表示されました: {errorMessage}");
+            }
+
+            await Task.Delay(250);
+        }
+
+        throw new TimeoutException("変換結果またはエラー表示の待機がタイムアウトしました。");
     }
 
     private sealed class BrowserSession : IAsyncDisposable
@@ -120,6 +188,7 @@ public sealed class UiWorkflowTests
             {
                 AcceptDownloads = true
             });
+            await context.GrantPermissionsAsync(["clipboard-read", "clipboard-write"]);
 
             return new BrowserSession(playwright, browser, context);
         }

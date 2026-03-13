@@ -34,7 +34,7 @@ public sealed class MarkItDownOptions
         ModuleName = string.IsNullOrWhiteSpace(ModuleName) ? "markitdown" : ModuleName.Trim();
         MaxUploadSizeBytes = MaxUploadSizeBytes <= 0 ? DefaultMaxUploadSizeBytes : MaxUploadSizeBytes;
 
-        if (!string.IsNullOrWhiteSpace(contentRootPath) && !Path.IsPathRooted(PythonExecutablePath))
+        if (!string.IsNullOrWhiteSpace(contentRootPath) && ShouldResolveRelativePath(PythonExecutablePath))
         {
             PythonExecutablePath = Path.GetFullPath(Path.Combine(contentRootPath, PythonExecutablePath));
         }
@@ -56,5 +56,17 @@ public sealed class MarkItDownOptions
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(extension => extension, StringComparer.OrdinalIgnoreCase)
             .ToList();
+    }
+
+    private static bool ShouldResolveRelativePath(string path)
+    {
+        if (Path.IsPathRooted(path))
+        {
+            return false;
+        }
+
+        return path.Contains(Path.DirectorySeparatorChar)
+            || path.Contains(Path.AltDirectorySeparatorChar)
+            || path.StartsWith(".", StringComparison.Ordinal);
     }
 }
