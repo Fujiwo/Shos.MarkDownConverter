@@ -41,7 +41,18 @@ dotnet publish src/Shos.MarkDownConverter.Web/Shos.MarkDownConverter.Web.csproj 
 - [scripts/Prepare-PythonRuntime.ps1](../scripts/Prepare-PythonRuntime.ps1) が実行可能か確認してください
 - 別の Python 実行ファイルを使う場合は、publish 時に `PythonBuildCommand` MSBuild プロパティを指定してください
 
-`error NETSDK1152` で publish が止まる場合は、過去の試行で生成された [src/Shos.MarkDownConverter.Web](../src/Shos.MarkDownConverter.Web) 配下の `python-runtime` が既定の publish 項目に混ざっている可能性があります。最新の構成では `obj/.../python-runtime` を使うので、古い `python-runtime` ディレクトリを削除して再試行してください。
+ランタイムの前提は次のとおりです。
+
+- 開発時の Python はリポジトリ直下の `.venv` を使います
+- publish 時の staging は Web プロジェクト配下の `obj/python-runtime` にだけ作ります
+- publish 出力へコピーされる最終配置名は `.python-runtime` です
+- `src/Shos.MarkDownConverter.Web/python-runtime` と `src/Shos.MarkDownConverter.Web/.python-runtime` は通常運用では残しません
+
+`error NETSDK1152` で publish が止まる場合は、過去の試行で生成された [src/Shos.MarkDownConverter.Web](../src/Shos.MarkDownConverter.Web) 配下の `python-runtime` または `.python-runtime` が publish 項目に混ざっている可能性があります。不要なローカル生成物なので削除してから再試行してください。まとめて掃除する場合は次を実行します。
+
+```powershell
+.\scripts\Clean-PythonRuntime.ps1
+```
 
 ## 対応形式なのに変換できない
 
