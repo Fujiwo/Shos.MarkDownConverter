@@ -1,9 +1,13 @@
 namespace Shos.MarkDownConverter.Web.Services;
 
+/// <summary>
+/// アップロード上限超過を示す例外を吸い上げ、実行環境差を隠して 1 つの判定にそろえます。
+/// </summary>
 public static class PayloadTooLargeDetector
 {
 	public static bool IsPayloadTooLarge(Exception? exception)
 	{
+		// 413 はホストや multipart 解析段階によって内側の例外へ包まれるため、連鎖をたどって判定する。
 		for (var current = exception; current is not null; current = current.InnerException)
 		{
 			if (current is BadHttpRequestException badHttpRequestException

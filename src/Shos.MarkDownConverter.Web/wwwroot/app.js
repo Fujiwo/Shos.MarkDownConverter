@@ -16,10 +16,12 @@ import {
     showStatus
 } from './app-ui.js';
 
+// 画面全体の初期化、イベント配線、変換要求の送信を調停するモジュール。
 const elements = getElements();
 
 let downloadFileName = 'converted.md';
 
+// 初期表示時に設定を読み込んでからイベントを結び、UI の初期状態をそろえる。
 initialize();
 
 async function initialize() {
@@ -31,6 +33,7 @@ async function loadOptions() {
     try {
         renderOptions(elements, await fetchOptions());
     } catch {
+        // options の取得に失敗しても画面は開けるようにし、利用者には取得失敗だけを伝える。
         renderOptionsLoadFailure(elements);
     }
 }
@@ -70,6 +73,7 @@ function wireEvents() {
 
 async function submitForm(event) {
     event.preventDefault();
+    // 送信のたびに前回の結果とエラーを消して、今回の応答だけを画面に残す。
     clearError(elements);
     hideResult(elements);
 
@@ -83,6 +87,7 @@ async function submitForm(event) {
             return;
         }
 
+        // 成功ステータスでも想定外の JSON が返る可能性があるため、表示前に形を確認する。
         if (!payload || typeof payload.markdown !== 'string' || typeof payload.downloadFileName !== 'string') {
             showError(elements, buildUnexpectedSuccessPayloadError());
             return;
@@ -103,6 +108,7 @@ async function copyResult() {
     }
 
     try {
+        // 権限や対応状況は実行環境差が大きいため、利用前に API の存在を確認する。
         if (!navigator.clipboard?.writeText) {
             throw new Error('Clipboard API unavailable');
         }
@@ -119,6 +125,7 @@ function downloadResult() {
         return;
     }
 
+    // 一時 URL を使って保存だけを行い、サーバー側へ生成結果を保持させない。
     const blob = new Blob([elements.resultOutput.value], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');

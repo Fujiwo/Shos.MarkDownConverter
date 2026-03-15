@@ -4,6 +4,9 @@ using Shos.MarkDownConverter.Web.Services;
 
 namespace Shos.MarkDownConverter.Web.Extensions;
 
+/// <summary>
+/// MarkItDown 変換に必要な設定とサービスを DI コンテナーへ登録します。
+/// </summary>
 public static class MarkDownConverterServiceCollectionExtensions
 {
 	public static IServiceCollection AddMarkDownConverter(
@@ -12,6 +15,7 @@ public static class MarkDownConverterServiceCollectionExtensions
 		string contentRootPath)
 	{
 		var converterOptionsSection = configuration.GetSection(MarkItDownOptions.SectionName);
+		// multipart のオーバーヘッドを見込んで、表示用の上限値と受信上限を分けて計算する。
 		var maxUploadSize = MarkItDownOptionsConfiguration.ResolveMaxUploadSizeBytes(converterOptionsSection);
 		var uploadLimitSettings = UploadLimitSettings.Create(maxUploadSize);
 
@@ -23,6 +27,7 @@ public static class MarkDownConverterServiceCollectionExtensions
 		services
 			.AddOptions<MarkItDownOptions>()
 			.Bind(converterOptionsSection)
+			// bind 後に正規化して、相対パスや拡張子の表記ゆれを実行前に吸収する。
 			.PostConfigure(options => options.Normalize(contentRootPath, uploadLimitSettings.MaxUploadSizeBytes));
 
 		services.AddSingleton(uploadLimitSettings);

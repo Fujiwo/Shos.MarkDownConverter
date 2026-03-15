@@ -1,10 +1,14 @@
 namespace Shos.MarkDownConverter.Web.Services;
 
+/// <summary>
+/// MarkItDown 実行時の失敗を、利用者向けに案内しやすいエラーへ分類します。
+/// </summary>
 public sealed class MarkItDownErrorFormatter
 {
     public ConversionError FormatExecutionFailure(int exitCode, string standardError)
     {
         var stderr = standardError.Trim();
+		// 依存不足は再試行では直りにくいため、一般的な変換失敗とは分けて具体的に案内する。
         if (ContainsAny(stderr, "No module named", "ModuleNotFoundError") && stderr.Contains("markitdown", StringComparison.OrdinalIgnoreCase))
         {
             return new ConversionError(
@@ -74,6 +78,7 @@ public sealed class MarkItDownErrorFormatter
             exception.ToString());
     }
 
+    // 複数の候補文字列のいずれかを含むかを、大文字小文字を無視して判定する。
     private static bool ContainsAny(string text, params string[] fragments)
     {
         return fragments.Any(fragment => text.Contains(fragment, StringComparison.OrdinalIgnoreCase));

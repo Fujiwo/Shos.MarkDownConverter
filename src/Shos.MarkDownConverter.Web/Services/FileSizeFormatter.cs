@@ -1,5 +1,8 @@
 namespace Shos.MarkDownConverter.Web.Services;
 
+/// <summary>
+/// バイト数を、画面表示やエラーメッセージで読みやすい単位へ変換します。
+/// </summary>
 public static class FileSizeFormatter
 {
 	public static string Format(long bytes)

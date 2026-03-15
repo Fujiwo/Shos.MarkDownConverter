@@ -1,5 +1,8 @@
 namespace Shos.MarkDownConverter.Web.Services;
 
+/// <summary>
+/// 1 回の変換処理で使う一時ディレクトリと入出力ファイルの場所をまとめて管理します。
+/// </summary>
 public sealed class ConversionWorkspace : IDisposable
 {
 	private readonly ILogger _logger;
@@ -21,6 +24,7 @@ public sealed class ConversionWorkspace : IDisposable
 
 	public static ConversionWorkspace Create(string? workingDirectoryRoot, string extension, ILogger logger)
 	{
+		// 親ディレクトリを差し替えられるようにしつつ、未指定時は OS 標準の一時領域へ逃がす。
 		var root = string.IsNullOrWhiteSpace(workingDirectoryRoot)
 			? Path.GetTempPath()
 			: workingDirectoryRoot;
@@ -46,6 +50,7 @@ public sealed class ConversionWorkspace : IDisposable
 		{
 			if (Directory.Exists(WorkingDirectory))
 			{
+				// 変換結果は永続保存しないため、処理後は作業ディレクトリごと削除する。
 				Directory.Delete(WorkingDirectory, recursive: true);
 			}
 		}

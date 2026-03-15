@@ -1,3 +1,4 @@
+// DOM 更新と表示向けメッセージ生成を担当し、通信やイベント処理とは分離する。
 export function renderOptions(elements, options) {
     elements.supportedExtensions.textContent = options.allowedExtensions.join(', ');
     elements.maxSize.textContent = formatBytes(options.maxUploadSizeBytes);
@@ -42,6 +43,7 @@ export function showError(elements, payload) {
     elements.errorCauses.innerHTML = '';
     elements.errorActions.innerHTML = '';
 
+    // 原因候補や対処方法は空配列を許容し、返ってきた分だけを画面へ出す。
     const causes = Array.isArray(payload.possibleCauses) ? payload.possibleCauses : [];
     const actions = Array.isArray(payload.actions) ? payload.actions : [];
 
@@ -69,6 +71,7 @@ export function setBusy(elements, isBusy, message) {
 }
 
 export function buildServerError(response, payload) {
+    // エラーペイロードは、構造化エラー → ProblemDetails → HTTP ステータス → 既定値の順で段階的に解釈する。
     if (isStructuredErrorPayload(payload)) {
         return payload;
     }
@@ -169,6 +172,7 @@ function formatBytes(bytes) {
         return `${bytes} B`;
     }
 
+    // UI では細かすぎる桁は不要なので、小数 1 桁までに丸める。
     const kiloBytes = bytes / 1024;
     if (kiloBytes < 1024) {
         return `${kiloBytes.toFixed(1)} KB`;

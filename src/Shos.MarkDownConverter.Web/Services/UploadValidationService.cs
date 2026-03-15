@@ -3,6 +3,9 @@ using Shos.MarkDownConverter.Web.Options;
 
 namespace Shos.MarkDownConverter.Web.Services;
 
+/// <summary>
+/// API へ渡されたアップロードファイルを、変換前に受け付け可能な状態か検証します。
+/// </summary>
 public sealed class UploadValidationService
 {
     private readonly MarkItDownOptions _options;
@@ -14,6 +17,7 @@ public sealed class UploadValidationService
 
     public FileValidationResult Validate(IFormFile? file)
     {
+        // 利用者が修正しやすい順に失敗理由を返すことで、最初の再試行で直せる可能性を上げる。
         if (file is null)
         {
             return FileValidationResult.Invalid(new ConversionError(
@@ -50,6 +54,7 @@ public sealed class UploadValidationService
 
         if (file.Length > _options.MaxUploadSizeBytes)
         {
+			// multipart レベルで捕まらなかった要求も、ここで API と UI が理解しやすいエラーへそろえる。
             return FileValidationResult.Invalid(ConversionErrorFactory.CreateFileTooLarge(_options.MaxUploadSizeBytes) with
             {
                 StatusCode = StatusCodes.Status400BadRequest
@@ -59,6 +64,7 @@ public sealed class UploadValidationService
         var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
         if (string.IsNullOrWhiteSpace(extension) || !_options.AllowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
         {
+			// MarkItDown が扱える形式でも、このアプリで明示許可していない拡張子は受け付けない。
             return FileValidationResult.Invalid(new ConversionError(
                 StatusCodes.Status400BadRequest,
                 "unsupported-extension",
@@ -80,6 +86,7 @@ public sealed class UploadValidationService
 
 public sealed record FileValidationResult(bool IsValid, ConversionError? Error, string? Extension)
 {
+    // 以降の変換処理では、検証済みの拡張子も合わせて使えるように戻しておく。
     public static FileValidationResult Valid(string extension) => new(true, null, extension);
 
     public static FileValidationResult Invalid(ConversionError error) => new(false, error, null);
