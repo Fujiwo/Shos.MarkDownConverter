@@ -1,20 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|c:\\dropbox\\dropbox\\source\\github\\repos\\shos.markdownconverter\\src\\shos.markdownconverter.web\\appsettings.production.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|solutionrelative:src\\shos.markdownconverter.web\\appsettings.production.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|c:\\dropbox\\dropbox\\source\\github\\repos\\shos.markdownconverter\\src\\shos.markdownconverter.web\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|solutionrelative:src\\shos.markdownconverter.web\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|c:\\dropbox\\dropbox\\source\\github\\repos\\shos.markdownconverter\\src\\shos.markdownconverter.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{C27CDEA1-7937-FE1D-7746-F188A1A7CE50}|src\\Shos.MarkDownConverter.Web\\Shos.MarkDownConverter.Web.csproj|solutionrelative:src\\shos.markdownconverter.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -22,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 24,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -119,45 +106,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.Production.json",
-              "DocumentMoniker": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.Production.json",
-              "RelativeDocumentMoniker": "src\\Shos.MarkDownConverter.Web\\appsettings.Production.json",
-              "ToolTip": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.Production.json",
-              "RelativeToolTip": "src\\Shos.MarkDownConverter.Web\\appsettings.Production.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-13T05:39:14.713Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.json",
-              "RelativeDocumentMoniker": "src\\Shos.MarkDownConverter.Web\\appsettings.json",
-              "ToolTip": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.json",
-              "RelativeToolTip": "src\\Shos.MarkDownConverter.Web\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-13T04:11:35.51Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "src\\Shos.MarkDownConverter.Web\\appsettings.Development.json",
-              "ToolTip": "C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\Shos.MarkDownConverter\\src\\Shos.MarkDownConverter.Web\\appsettings.Development.json",
-              "RelativeToolTip": "src\\Shos.MarkDownConverter.Web\\appsettings.Development.json",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAqwAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-13T04:11:22.213Z",
-              "EditorCaption": ""
             }
           ]
         }
